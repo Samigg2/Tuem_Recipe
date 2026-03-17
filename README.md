@@ -1,5 +1,3 @@
----
-
 # 🍽️ TuemRecipe – Share the Vibe, Share the Food
 
 **TuemRecipe** is a community-driven food sharing platform where home cooks, food lovers, and kitchen experimenters come together to share their favorite dishes, secret family recipes, and culinary creations.
@@ -90,5 +88,3 @@ Pull requests are welcome. Fork it, branch it, PR it.
 ## 📄 License
 
 MIT – use it, share it, build on it.
-
----
