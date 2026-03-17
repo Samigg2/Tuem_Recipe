@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseURL = "https://food-recipe-backed.onrender.com/";
+const baseURL = "http://localhost:3001/";
 
 const app = axios.create({
   baseURL,

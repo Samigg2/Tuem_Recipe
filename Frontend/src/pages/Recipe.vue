@@ -26,6 +26,7 @@ const mutant = gql`
     $thumbimage: String!
     $title: String!
     $userid: uuid
+    $price: Float!
   ) {
     insertrecipe(
       args: {
@@ -38,6 +39,7 @@ const mutant = gql`
         thumbimage: $thumbimage
         title: $title
         userid: $userid
+        price: $price
       }
     ) {
       name
@@ -82,6 +84,13 @@ const schemeValidate = {
     stepwarning.value = "";
     if (steps.value.length >= 2) return true;
     else return " at least two step is required";
+  },
+
+  price: (value) => {
+    if (value && !isNaN(Number(value)) && Number(value) > 0) {
+      return true;
+    } else if (Number(value) < 0) return "Price must not be negative";
+    else return "Enter the price";
   },
 };
 
@@ -168,6 +177,7 @@ const { value: ingradient, errorMessage: errorIngredient } = useField("ingredien
 const { value: step_input, errorMessage: errorStep } = useField("stepValidate");
 const { value: imagevalue, errorMessage: errMage } = useField("imageValidate");
 const { value: prep, errorMessage: errorPrep } = useField("prep");
+const { value: price, errorMessage: errorPrice } = useField("price");
 
 const catagory = ref("249");
 
@@ -263,7 +273,8 @@ const submit = handleSubmit(
       step: upload_step_text,
       thumbimage: temporaryImage.value,
       title: values.nameValidate,
-      userid: store.state.id
+      userid: store.state.id,
+      price: values.price,
     });
     images.value = [];
     ingradientInput.value = [];
@@ -496,6 +507,23 @@ const submit = handleSubmit(
               <option value="min">Minutes</option>
               <option value="hr">Hours</option>
             </select>
+          </div>
+        </div>
+
+        <!-- Price -->
+        <div class="mb-8">
+          <h2 class="text-2xl font-semibold mb-4 font-['Dancing_Script'] text-gray-800">Price</h2>
+          <div class="flex gap-4 items-center">
+            <div class="flex-1">
+              <InNumber
+                v-model="price"
+                name="price"
+                type="number"
+                placeholder="Enter price in ETB"
+                unique="recipe-price"
+              />
+              <span class="text-sm text-red-600 mt-1 font-['Quicksand']">{{ errorPrice }}</span>
+            </div>
           </div>
         </div>
 

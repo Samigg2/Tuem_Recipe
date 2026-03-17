@@ -7,6 +7,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     BackArrow: typeof import('./src/components/icons/BackArrow.vue')['default']
     BookCard: typeof import('./src/components/bookCard.vue')['default']
+    BuyModal: typeof import('./src/components/BuyModal.vue')['default']
     Cards: typeof import('./src/components/cards.vue')['default']
     Dropdawn: typeof import('./src/components/Dropdawn.vue')['default']
     FileInput: typeof import('./src/components/FileInput.vue')['default']

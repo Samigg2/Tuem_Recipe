@@ -50,6 +50,7 @@ const submit = handleSubmit(async () => {
   if (email && email.value && name && name.value && password && password.value) {
     try {
       loading.value = true;
+      console.log("Registering:", name.value, email.value, password.value);
       const data = await app.post("user/register", {
         name: name.value,
         email: email.value,

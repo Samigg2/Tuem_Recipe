@@ -9,6 +9,7 @@ import { watchEffect } from "@vue/runtime-core";
 import Rating from "../components/Rating.vue";
 import { hasDirectives } from "@apollo/client/utilities";
 import RateDisplay from "../components/RateDisplay.vue";
+import BuyModal from "../components/BuyModal.vue";
 
 const toggler = ref(true);
 const useState = useStore();
@@ -67,6 +68,8 @@ let comment = ref(5);
 let timer = ref("9 m");
 const favorite = ref();
 const bookmark = ref();
+const showBuyModal = ref(false);
+
 const ClickedFavorite = () => {
   if (
     useState.state.id != "" &&
@@ -142,6 +145,7 @@ const getProductInfo = gql`
       thum_image
       description
       createdBy
+      price
 
       getDirection {
         steps
@@ -271,6 +275,13 @@ const rating_method = (rates) => {
     router.push("/authentication");
   }
 };
+
+function openBuyModal() {
+  showBuyModal.value = true;
+}
+function closeBuyModal() {
+  showBuyModal.value = false;
+}
 </script>
 
 <template>
@@ -280,7 +291,7 @@ const rating_method = (rates) => {
       <img class="w-20 h-20" src="../assets/loading.svg" alt="Loading..." />
     </div>
 
-    <div v-else-if="result" class="container mx-auto px-4 py-8">
+    <div v-else-if="result && result.getrecipebyid" class="container mx-auto px-4 py-8">
       <!-- Recipe Header -->
       <div class="relative rounded-xl overflow-hidden mb-8">
         <div class="aspect-w-16 aspect-h-9 max-h-[600px]">
@@ -349,12 +360,8 @@ const rating_method = (rates) => {
           <!-- Ingredients -->
           <div class="bg-white rounded-xl p-6 shadow-sm">
             <h2 class="text-2xl font-bold text-emerald-800 mb-4 font-['Dancing_Script']">Ingredients</h2>
-            <ul class="space-y-2">
-              <li 
-                v-for="ingredient in result.getrecipebyid.getIngeredent[0].items" 
-                :key="ingredient"
-                class="flex items-center gap-2 font-['Quicksand']"
-              >
+            <ul v-if="result.getrecipebyid && result.getrecipebyid.getIngeredent && result.getrecipebyid.getIngeredent[0]">
+              <li v-for="ingredient in result.getrecipebyid.getIngeredent[0].items" :key="ingredient" class="flex items-center gap-2 font-['Quicksand']">
                 <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
@@ -366,15 +373,9 @@ const rating_method = (rates) => {
           <!-- Instructions -->
           <div class="bg-white rounded-xl p-6 shadow-sm">
             <h2 class="text-2xl font-bold text-emerald-800 mb-4 font-['Dancing_Script']">Instructions</h2>
-            <ol class="space-y-4">
-              <li 
-                v-for="(step, index) in result.getrecipebyid.getDirection[0].steps" 
-                :key="index"
-                class="flex gap-4 font-['Quicksand']"
-              >
-                <span class="flex-shrink-0 w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-bold">
-                  {{ index + 1 }}
-                </span>
+            <ol v-if="result.getrecipebyid && result.getrecipebyid.getDirection && result.getrecipebyid.getDirection[0]">
+              <li v-for="(step, index) in result.getrecipebyid.getDirection[0].steps" :key="index" class="flex gap-4 font-['Quicksand']">
+                <span class="flex-shrink-0 w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-bold">{{ index + 1 }}</span>
                 <p class="text-gray-700 leading-relaxed">{{ step }}</p>
               </li>
             </ol>
@@ -415,7 +416,7 @@ const rating_method = (rates) => {
             <div class="border-t pt-4">
               <h3 class="text-lg font-semibold text-gray-900 mb-3 font-['Quicksand']">Rate this recipe</h3>
               <Rating 
-                :rate_number="result.getrecipebyid.userLikeRateComment[0].rate"
+                :rate_number="result.getrecipebyid && result.getrecipebyid.userLikeRateComment && result.getrecipebyid.userLikeRateComment[0] ? result.getrecipebyid.userLikeRateComment[0].rate : 0"
                 @method="rating_method"
               />
             </div>
@@ -442,6 +443,15 @@ const rating_method = (rates) => {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
               {{ bookmark === 'fill-yellow-800' ? 'Saved' : 'Save Recipe' }}
+            </button>
+            <div class="flex flex-col gap-2 mb-4">
+              <span class="text-lg font-bold text-emerald-700">Price: {{ result.getrecipebyid && result.getrecipebyid.price != null ? result.getrecipebyid.price + ' ETB' : 'Free' }}</span>
+            </div>
+            <button 
+              @click="openBuyModal"
+              class="w-full bg-blue-600 text-white py-3 rounded-lg font-['Quicksand'] hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+            >
+              Buy Recipe
             </button>
           </div>
 
@@ -501,7 +511,14 @@ const rating_method = (rates) => {
         </div>
       </div>
     </div>
+    <div v-else-if="result && !result.getrecipebyid" class="flex w-full h-[80vh] justify-center items-center">
+      <div class="text-center">
+        <h2 class="text-2xl text-red-600 font-bold mb-4">Recipe Not Found or Missing Data</h2>
+        <p class="text-gray-700">This recipe may have been deleted or is missing required information. Please try another recipe.</p>
+      </div>
+    </div>
   </div>
+  <BuyModal v-if="showBuyModal && result.getrecipebyid" :price="result.getrecipebyid.price" :recipe="result.getrecipebyid" @close="closeBuyModal" />
 </template>
 
 <route lang="yaml">

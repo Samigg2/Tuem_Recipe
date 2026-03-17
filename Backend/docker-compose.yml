@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_USER: myuser
+      POSTGRES_DB: foodrecipes
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  hasura:
+    image: hasura/graphql-engine:v2.36.0
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    restart: always
+    environment:  # <-- Correctly indented here
+      HASURA_GRAPHQL_DATABASE_URL: postgres://myuser:mysecretpassword@postgres:5432/foodrecipes
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_ADMIN_SECRET: myhasurasecret
+      HASURA_GRAPHQL_JWT_SECRET: '{"type": "HS256", "key": "12345678901234567890123456789012"}'
+
+volumes:
+  db_data:

@@ -240,9 +240,9 @@ onUnmounted(() => {
 const logout_event = async () => {
   show_profile.value = !show_profile.value;
   try {
-    const data = await app.get("/user/logout");
-    if (data.data.clear == "successfully") {
-      store.dispatch("setToken", data.data.accessToken);
+    const data = await app.post("/user/logout");
+    if (data.status === 200) {
+      store.dispatch("setToken", "");
       store.dispatch("setId", "");
       store.dispatch("setEmail", "");
       store.dispatch("setName", "");

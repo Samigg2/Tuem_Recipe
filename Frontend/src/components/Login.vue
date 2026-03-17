@@ -41,6 +41,7 @@ const loading = ref(false);
 const submit = handleSubmit(async () => {
   try {
     loading.value = true;
+    console.log("Logging in:", email.value, password.value);
     const data = await app.post("/user/login", {
       email: email.value,
       password: password.value,
@@ -79,7 +80,7 @@ const submit = handleSubmit(async () => {
         placeholder="samuelgebrekirstos93@gmail.com"
         class="auth-input"
       />
-      <span class="text-sm text-red-600">{{ errorEmail }}</span>
+      <span class="text-sm text-red-600">{{ emailError }}</span>
     </div>
     <div class="flex relative flex-col w-full justify-start items-center">
       <Input

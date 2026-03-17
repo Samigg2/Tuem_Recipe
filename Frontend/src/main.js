@@ -1,6 +1,3 @@
-
-
-
 import { watchEffect } from 'vue';
 
  import appp from "../src/Axios/axiosconf";
@@ -22,7 +19,7 @@ import { DefaultApolloClient } from "@vue/apollo-composable";
 import { setContext } from "@apollo/client/link/context";
 
 const httpLink = createHttpLink({
-  uri: "https://foodrecipeapp.hasura.app/v1/graphql",
+  uri: "http://localhost:8080/v1/graphql",
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -35,16 +32,25 @@ const authLink = setContext((_, { headers }) => {
     }
   };
 });
-
  
        const refresh = async () => {
-            const data = await appp.get("/user/refresh")
-            if(data.data){
-             
-                store.dispatch("setToken",data.data.accessToken)
-                store.dispatch("setName",data.data.name);
-                store.dispatch("setEmail",data.data.email);
-                store.dispatch("setId",data.data.id);
+  try {
+    const data = await appp.get("/user/refresh");
+    if (data.data && data.data.accessToken) {
+      store.dispatch("setToken", data.data.accessToken);
+      store.dispatch("setName", data.data.name);
+      store.dispatch("setEmail", data.data.email);
+      store.dispatch("setId", data.data.id);
+    }
+  } catch (error) {
+    console.warn("User not authenticated, session refresh failed.");
+    // Clear any lingering user data from the store
+    store.dispatch("setToken", "");
+    store.dispatch("setName", "");
+    store.dispatch("setEmail", "");
+    store.dispatch("setId", "");
+  } finally {
+    // Always initialize and mount the app
                 const client = new ApolloClient({
                     link: authLink.concat(httpLink),
                     cache: new InMemoryCache(),
@@ -53,19 +59,15 @@ const authLink = setContext((_, { headers }) => {
                     setup() {
                       provide(DefaultApolloClient, client);
                     },
-                
                     render: () => h(App),
                   });
                   app.use(router);
                   app.use(store);
                   app.mount("#app");
             }
+};
     
-        }
         const refresh1 = async () => {
-          
             await refresh();
-           
        };
        refresh1()
-      
