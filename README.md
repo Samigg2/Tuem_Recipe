@@ -19,9 +19,9 @@ Whether you're whipping up a quick weeknight dinner or perfecting your grandma's
 ## 🛠️ Built With
 
 - **Frontend:** Vue 3 + Vite + TypeScript
-- **API Layer:** GraphQL + Hasura (instant real-time APIs)
+- **API Layer:** GraphQL + Hasura
 - **Database:** PostgreSQL
-- **Backend:** Go for custom services
+- **Backend:** Go
 - **Container:** Docker
 
 ---
@@ -39,17 +39,12 @@ git clone https://github.com/yourusername/tuemrecipe.git
 cd tuemrecipe
 ```
 
-### 2. Fire it up with Docker
+### 2. Fire it up
 ```bash
 docker-compose up -d
 ```
 
-### 3. Set up Hasura
-- Go to `http://localhost:8080`
-- Track your tables
-- Done.
-
-### 4. Run the frontend
+### 3. Run the frontend
 ```bash
 cd frontend
 npm install
@@ -60,31 +55,6 @@ Visit `http://localhost:5173` and you're live.
 
 ---
 
-## 🔥 Why This Stack?
-
-- **Vue + Vite** – Fast, smooth dev experience
-- **Hasura + GraphQL** – Real-time APIs without the headache
-- **Go** – Lightning fast backend when needed
-- **Docker** – Runs the same everywhere
-
----
-
-## 🧑‍🍳 Coming Soon
-
-- User auth (Google/GitHub)
-- Recipe search
-- Save favorites
-- Comments & ratings
-- Shopping lists
-
----
-
-## 🤝 Wanna Contribute?
-
-Pull requests are welcome. Fork it, branch it, PR it.
-
----
-
 ## 📄 License
 
-MIT – use it, share it, build on it.
+MIT
